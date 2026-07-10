@@ -1,35 +1,35 @@
- /* ---------------- MAPA ---------------- */
-  const map = L.map('map', { zoomControl: true }).setView([5.0689, -75.5174], 15); // Manizales, Colombia (ajusta si tu ciudad es otra)
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+/* ---------------- MAPA ---------------- */
+const map = L.map('map', { zoomControl: true }).setView([5.0689, -75.5174], 15); // Manizales, Colombia (ajusta si tu ciudad es otra)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors',
     maxZoom: 19
-  }).addTo(map);
+}).addTo(map);
 
-  const hivisIcon = L.divIcon({
+const hivisIcon = L.divIcon({
     className: '',
     html: '<div style="width:22px;height:22px;border-radius:50% 50% 50% 0;background:#D4F62B;border:2px solid #16211C;transform:rotate(-45deg);box-shadow:0 2px 4px rgba(0,0,0,0.3)"></div>',
-    iconSize: [22,22],
-    iconAnchor: [11,22]
-  });
+    iconSize: [22, 22],
+    iconAnchor: [11, 22]
+});
 
-  let pointCount = 0;
-  const countEl = document.getElementById('pointCount');
-  let pendingLatLng = null;
+let pointCount = 0;
+const countEl = document.getElementById('pointCount');
+let pendingLatLng = null;
 
-  const pointOverlay = document.getElementById('pointOverlay');
-  const openPointModal = (latlng) => {
+const pointOverlay = document.getElementById('pointOverlay');
+const openPointModal = (latlng) => {
     pendingLatLng = latlng;
     document.getElementById('pointName').value = '';
     document.getElementById('pointCategory').value = '';
     document.getElementById('pointDesc').value = '';
     pointOverlay.classList.add('open');
-  };
-  document.getElementById('closePoint').onclick = () => pointOverlay.classList.remove('open');
-  pointOverlay.onclick = (e) => { if(e.target === pointOverlay) pointOverlay.classList.remove('open'); };
+};
+document.getElementById('closePoint').onclick = () => pointOverlay.classList.remove('open');
+pointOverlay.onclick = (e) => { if (e.target === pointOverlay) pointOverlay.classList.remove('open'); };
 
-  map.on('click', (e) => openPointModal(e.latlng));
+map.on('click', (e) => openPointModal(e.latlng));
 
-  document.getElementById('savePoint').onclick = () => {
+document.getElementById('savePoint').onclick = () => {
     const name = document.getElementById('pointName').value.trim() || 'Punto sin nombre';
     const cat = document.getElementById('pointCategory').value.trim() || 'General';
     const desc = document.getElementById('pointDesc').value.trim();
@@ -38,27 +38,27 @@
     pointCount++;
     countEl.textContent = pointCount + (pointCount === 1 ? ' punto registrado' : ' puntos registrados');
     pointOverlay.classList.remove('open');
-  };
+};
 
-  /* ---------------- RELOJ EN VIVO ---------------- */
-  const liveClock = document.getElementById('liveClock');
-  const liveDate = document.getElementById('liveDate');
-  function pad(n){ return n.toString().padStart(2,'0'); }
-  function tick(){
+/* ---------------- RELOJ EN VIVO ---------------- */
+const liveClock = document.getElementById('liveClock');
+const liveDate = document.getElementById('liveDate');
+function pad(n) { return n.toString().padStart(2, '0'); }
+function tick() {
     const now = new Date();
     liveClock.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-    liveDate.textContent = now.toLocaleDateString('es-CO', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-  }
-  tick();
-  setInterval(tick, 1000);
+    liveDate.textContent = now.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+tick();
+setInterval(tick, 1000);
 
-  /* ---------------- MODAL DE TURNO ---------------- */
-  const turnoOverlay = document.getElementById('turnoOverlay');
-  const turnoBody = document.getElementById('turnoBody');
-  const openTurnoBtn = document.getElementById('openTurno');
-  const closeTurnoBtn = document.getElementById('closeTurno');
+/* ---------------- MODAL DE TURNO ---------------- */
+const turnoOverlay = document.getElementById('turnoOverlay');
+const turnoBody = document.getElementById('turnoBody');
+const openTurnoBtn = document.getElementById('openTurno');
+const closeTurnoBtn = document.getElementById('closeTurno');
 
-  function resetTurnoBody(){
+function resetTurnoBody() {
     turnoBody.innerHTML = `
       <div class="clock-field">
         <div>
@@ -90,27 +90,27 @@
     `;
     startClock();
     document.getElementById('turnoForm').addEventListener('submit', handleTurnoSubmit);
-  }
+}
 
-  let clockInterval;
-  function startClock(){
+let clockInterval;
+function startClock() {
     const c = document.getElementById('liveClock');
     const d = document.getElementById('liveDate');
-    function t(){
-      const now = new Date();
-      c.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-      d.textContent = now.toLocaleDateString('es-CO', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    function t() {
+        const now = new Date();
+        c.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+        d.textContent = now.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     }
     t();
     clearInterval(clockInterval);
     clockInterval = setInterval(t, 1000);
-  }
+}
 
-  openTurnoBtn.onclick = () => { resetTurnoBody(); turnoOverlay.classList.add('open'); };
-  closeTurnoBtn.onclick = () => { turnoOverlay.classList.remove('open'); clearInterval(clockInterval); };
-  turnoOverlay.onclick = (e) => { if(e.target === turnoOverlay){ turnoOverlay.classList.remove('open'); clearInterval(clockInterval); } };
+openTurnoBtn.onclick = () => { resetTurnoBody(); turnoOverlay.classList.add('open'); };
+closeTurnoBtn.onclick = () => { turnoOverlay.classList.remove('open'); clearInterval(clockInterval); };
+turnoOverlay.onclick = (e) => { if (e.target === turnoOverlay) { turnoOverlay.classList.remove('open'); clearInterval(clockInterval); } };
 
-  function handleTurnoSubmit(e){
+function handleTurnoSubmit(e) {
     e.preventDefault();
     const codigo = document.getElementById('fCodigo').value.trim();
     const nombre = document.getElementById('fNombre').value.trim();
@@ -118,15 +118,15 @@
     const cedula = document.getElementById('fCedula').value.trim();
     const errorMsg = document.getElementById('turnoError');
 
-    if(!codigo || !nombre || !apellidos || !cedula){
-      errorMsg.style.display = 'block';
-      return;
+    if (!codigo || !nombre || !apellidos || !cedula) {
+        errorMsg.style.display = 'block';
+        return;
     }
     errorMsg.style.display = 'none';
 
     const registeredAt = new Date();
     const timeStr = `${pad(registeredAt.getHours())}:${pad(registeredAt.getMinutes())}:${pad(registeredAt.getSeconds())}`;
-    const dateStr = registeredAt.toLocaleDateString('es-CO', { day:'numeric', month:'long', year:'numeric' });
+    const dateStr = registeredAt.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
 
     clearInterval(clockInterval);
 
@@ -142,4 +142,4 @@
       <button class="btn btn-block" style="margin-top:18px" id="newTurnoBtn">Registrar otra persona</button>
     `;
     document.getElementById('newTurnoBtn').onclick = resetTurnoBody;
-  }
+}
