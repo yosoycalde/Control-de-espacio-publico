@@ -1,5 +1,52 @@
 function pad(n){ return n.toString().padStart(2,'0'); }
 
+/* ---------------- ALMACENAMIENTO LOCAL ---------------- */
+const STORAGE_KEY = 'espacioPublico_registrosTurno';
+
+function getRegistros(){
+  try{
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  }catch(err){
+    return [];
+  }
+}
+
+function guardarRegistro(registro){
+  const registros = getRegistros();
+  registros.push(registro);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(registros));
+  return registros;
+}
+
+/* ---------------- EXPORTAR A EXCEL ---------------- */
+function descargarExcel(){
+  const registros = getRegistros();
+  if(!registros.length) return;
+
+  const filas = registros.map(r => ({
+    'Tipo de registro': r.tipo,
+    'Código': r.codigo,
+    'Nombre': r.nombre,
+    'Apellidos': r.apellidos,
+    'Cédula': r.cedula,
+    'Fecha': r.fecha,
+    'Hora': r.hora
+  }));
+
+  const hoja = XLSX.utils.json_to_sheet(filas);
+  hoja['!cols'] = [
+    { wch: 18 }, { wch: 14 }, { wch: 18 }, { wch: 18 }, { wch: 14 }, { wch: 20 }, { wch: 10 }
+  ];
+
+  const libro = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(libro, hoja, 'Turnos');
+
+  const ahora = new Date();
+  const nombreArchivo = `turnos_espacio_publico_${ahora.getFullYear()}-${pad(ahora.getMonth()+1)}-${pad(ahora.getDate())}_${pad(ahora.getHours())}${pad(ahora.getMinutes())}.xlsx`;
+
+  XLSX.writeFile(libro, nombreArchivo);
+}
+
 /* ---------------- CONFIG DE CADA TURNO ---------------- */
 const turnos = {
   inicio: {
@@ -8,10 +55,12 @@ const turnos = {
     openBtn: document.getElementById('openInicio'),
     closeBtn: document.getElementById('closeInicio'),
     idPrefix: 'ini',
+    tipo: 'Inicio',
     label: 'Registrar inicio de turno',
     stamp: 'Inicio registrado',
     rowLabel: 'Inicio de turno',
-    interval: null
+    interval: null,
+    draft: null
   },
   cierre: {
     overlay: document.getElementById('cierreOverlay'),
@@ -19,14 +68,18 @@ const turnos = {
     openBtn: document.getElementById('openCierre'),
     closeBtn: document.getElementById('closeCierre'),
     idPrefix: 'cie',
+    tipo: 'Cierre',
     label: 'Registrar cierre de turno',
     stamp: 'Cierre registrado',
     rowLabel: 'Fin de turno',
-    interval: null
+    interval: null,
+    draft: null
   }
 };
 
+/* ---------------- PASO 1: FORMULARIO ---------------- */
 function resetTurnoBody(t){
+  t.draft = null;
   t.body.innerHTML = `
     <div class="clock-field">
       <div>
@@ -73,6 +126,7 @@ function startClock(t){
   t.interval = setInterval(tick, 1000);
 }
 
+/* ---------------- PASO 2: VALIDAR Y ARMAR EL REGISTRO ---------------- */
 function handleTurnoSubmit(e, t){
   e.preventDefault();
   const codigo = document.getElementById(`${t.idPrefix}Codigo`).value.trim();
@@ -91,16 +145,67 @@ function handleTurnoSubmit(e, t){
   const timeStr = `${pad(registeredAt.getHours())}:${pad(registeredAt.getMinutes())}:${pad(registeredAt.getSeconds())}`;
   const dateStr = registeredAt.toLocaleDateString('es-CO', { day:'numeric', month:'long', year:'numeric' });
 
-  clearInterval(t.interval);
+  const registro = {
+    tipo: t.tipo,
+    codigo, nombre, apellidos, cedula,
+    fecha: dateStr,
+    hora: timeStr
+  };
 
+  if(t.tipo === 'Cierre'){
+    // El cierre no se guarda todavía: primero se pide confirmación.
+    t.draft = registro;
+    clearInterval(t.interval);
+    mostrarConfirmacionCierre(t);
+  }else{
+    // El inicio de turno se guarda directamente.
+    clearInterval(t.interval);
+    guardarRegistro(registro);
+    mostrarBadge(t, registro);
+  }
+}
+
+/* ---------------- PASO 3 (SOLO CIERRE): PANTALLA DE CONFIRMACIÓN ---------------- */
+function mostrarConfirmacionCierre(t){
+  const r = t.draft;
+  t.body.innerHTML = `
+    <div class="badge">
+      <div class="badge-stamp" style="color:var(--alert); border-color:var(--alert);">Confirmar</div>
+      <div class="badge-row"><span class="k">Código</span><span class="v">${r.codigo}</span></div>
+      <div class="badge-row"><span class="k">Nombre</span><span class="v">${r.nombre} ${r.apellidos}</span></div>
+      <div class="badge-row"><span class="k">Cédula</span><span class="v">${r.cedula}</span></div>
+      <div class="badge-row"><span class="k">Fin de turno</span><span class="v badge-time">${r.hora}</span></div>
+      <div class="badge-row"><span class="k">Fecha</span><span class="v">${r.fecha}</span></div>
+    </div>
+    <p style="font-size:13px; line-height:1.55; color:var(--ink-soft); margin-top:16px;">
+      Estás a punto de <strong>cerrar el turno</strong> de esta persona. Al confirmar, se guardará el cierre
+      y se descargará automáticamente una hoja de cálculo (.xlsx) con todos los registros de inicio y cierre almacenados.
+    </p>
+    <button class="btn btn-block" style="margin-top:16px" id="${t.idPrefix}ConfirmarCierre">Sí, cerrar turno y descargar</button>
+    <button class="btn btn-block btn-ghost" style="margin-top:10px" id="${t.idPrefix}CancelarCierre">Cancelar</button>
+  `;
+  document.getElementById(`${t.idPrefix}ConfirmarCierre`).onclick = () => confirmarCierre(t);
+  document.getElementById(`${t.idPrefix}CancelarCierre`).onclick = () => resetTurnoBody(t);
+}
+
+function confirmarCierre(t){
+  if(!t.draft) return;
+  guardarRegistro(t.draft);
+  descargarExcel();
+  mostrarBadge(t, t.draft);
+  t.draft = null;
+}
+
+/* ---------------- PASO FINAL: BADGE DE CONFIRMACIÓN ---------------- */
+function mostrarBadge(t, registro){
   t.body.innerHTML = `
     <div class="badge">
       <div class="badge-stamp">${t.stamp}</div>
-      <div class="badge-row"><span class="k">Código</span><span class="v">${codigo}</span></div>
-      <div class="badge-row"><span class="k">Nombre</span><span class="v">${nombre} ${apellidos}</span></div>
-      <div class="badge-row"><span class="k">Cédula</span><span class="v">${cedula}</span></div>
-      <div class="badge-row"><span class="k">${t.rowLabel}</span><span class="v badge-time">${timeStr}</span></div>
-      <div class="badge-row"><span class="k">Fecha</span><span class="v">${dateStr}</span></div>
+      <div class="badge-row"><span class="k">Código</span><span class="v">${registro.codigo}</span></div>
+      <div class="badge-row"><span class="k">Nombre</span><span class="v">${registro.nombre} ${registro.apellidos}</span></div>
+      <div class="badge-row"><span class="k">Cédula</span><span class="v">${registro.cedula}</span></div>
+      <div class="badge-row"><span class="k">${t.rowLabel}</span><span class="v badge-time">${registro.hora}</span></div>
+      <div class="badge-row"><span class="k">Fecha</span><span class="v">${registro.fecha}</span></div>
     </div>
     <button class="btn btn-block" style="margin-top:18px" id="${t.idPrefix}NewBtn">Registrar otra persona</button>
   `;
