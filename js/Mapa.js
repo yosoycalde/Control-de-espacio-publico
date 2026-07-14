@@ -7,7 +7,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 const hivisIcon = L.divIcon({
   className: '',
-  html: '<div style="width:22px;height:22px;border-radius:50% 50% 50% 0;background:#D4F62B;border:2px solid #16211C;transform:rotate(-45deg);box-shadow:0 2px 4px rgba(0,0,0,0.3)"></div>',
+  html: '<div style="width:22px;height:22px;border-radius:50% 50% 50% 0;background:#3B82F6;border:2px solid #0F1A26;transform:rotate(-45deg);box-shadow:0 2px 4px rgba(0,0,0,0.3)"></div>',
   iconSize: [22,22],
   iconAnchor: [11,22]
 });
