@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="resources/Img/icon.png">
+<title>Espacio Público — Mapa</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style/style.css">
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8z" fill="#16211C"/>
+        <circle cx="12" cy="10" r="3" fill="#D4F62B"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <h1>Espacio Público</h1>
+      <span>Panel de control · Prototipo</span>
+    </div>
+  </div>
+  <nav>
+    <a href="index.html">Turnos</a>
+    <a href="mapa.html" class="active">Mapa</a>
+    <a href="index.html#mas">Otros apartados</a>
+  </nav>
+</header>
+
+<main>
+  <div class="intro">
+    <div class="eyebrow">Vista general</div>
+    <h2>Gestión del espacio público en tiempo real</h2>
+    <p>Ubica puntos de interés, incidencias o mobiliario directamente sobre el mapa. Toca cualquier punto para añadir información.</p>
+  </div>
+
+  <!-- MAPA -->
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h3>Mapa del espacio</h3>
+        <p>Toca cualquier punto del mapa para añadir información (nombre, categoría y descripción).</p>
+      </div>
+      <div class="tag-count" id="pointCount">0 puntos registrados</div>
+    </div>
+    <div id="map"></div>
+    <div class="map-hint">CLIC EN EL MAPA → AÑADIR PUNTO · CLIC EN UN MARCADOR → VER / EDITAR</div>
+  </section>
+</main>
+
+<footer>ESPACIO PÚBLICO · PROTOTIPO LOCAL DE PRUEBA · SIN CONEXIÓN A BASE DE DATOS</footer>
+
+<!-- MODAL: nuevo punto en el mapa -->
+<div class="overlay" id="pointOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Nuevo punto en el mapa</h3>
+      <button id="closePoint">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Nombre del punto</label><input type="text" id="pointName" placeholder="Ej. Banca dañada, Parque Central"></div>
+      <div class="field"><label>Categoría</label><input type="text" id="pointCategory" placeholder="Ej. Mobiliario, Iluminación, Aseo"></div>
+      <div class="field"><label>Descripción</label><input type="text" id="pointDesc" placeholder="Detalle breve"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-block" id="savePoint">Guardar punto</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="js/mapa.js"></script>
+
+</body>
+</html>

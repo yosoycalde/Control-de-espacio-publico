@@ -4,8 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="resources/Img/icon.png">
-<title>Espacio Público — Mapa</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<title>Espacio Público — Turnos</title>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style/style.css">
 </head>
@@ -25,55 +24,69 @@
     </div>
   </div>
   <nav>
-    <a href="index.html" class="active">Mapa</a>
-    <a href="turno.html">Inicio de turno</a>
-    <a href="turno.html#mas">Otros apartados</a>
+    <a href="index.html" class="active">Turnos</a>
+    <a href="mapa.html">Mapa</a>
+    <a href="index.html#mas">Otros apartados</a>
   </nav>
 </header>
 
 <main>
   <div class="intro">
-    <div class="eyebrow">Vista general</div>
-    <h2>Gestión del espacio público en tiempo real</h2>
-    <p>Ubica puntos de interés, incidencias o mobiliario directamente sobre el mapa. Toca cualquier punto para añadir información.</p>
+    <div class="eyebrow">Personal en campo</div>
+    <h2>Registro de turnos del personal</h2>
+    <p>Registra el inicio y el cierre de turno con código, nombre, apellidos, cédula y la hora automática del dispositivo (no editable).</p>
   </div>
 
-  <!-- MAPA -->
-  <section class="panel">
-    <div class="panel-head">
-      <div>
-        <h3>Mapa del espacio</h3>
-        <p>Toca cualquier punto del mapa para añadir información (nombre, categoría y descripción).</p>
-      </div>
-      <div class="tag-count" id="pointCount">0 puntos registrados</div>
+  <!-- APARTADOS -->
+  <div class="grid" id="mas">
+    <div class="apartado" id="turnoInicio">
+      <span class="ap-num">APT-01</span>
+      <h4>Hora de inicio de turno</h4>
+      <p>Registra el ingreso del personal con código, nombre, apellidos, cédula y la hora automática del dispositivo (no editable).</p>
+      <button class="btn btn-block" id="openInicio">Iniciar turno →</button>
     </div>
-    <div id="map"></div>
-    <div class="map-hint">CLIC EN EL MAPA → AÑADIR PUNTO · CLIC EN UN MARCADOR → VER / EDITAR</div>
-  </section>
+
+    <div class="apartado" id="turnoCierre">
+      <span class="ap-num">APT-02</span>
+      <h4>Cierre de turno</h4>
+      <p>Registra la salida del personal con código, nombre, apellidos, cédula y la hora automática del dispositivo (no editable).</p>
+      <button class="btn btn-block" id="openCierre">Cerrar turno →</button>
+    </div>
+
+    <div class="apartado disabled">
+      <span class="ap-num">APT-03</span>
+      <h4>Incidencias</h4>
+      <p>Reporte de novedades en el espacio público. Próximamente.</p>
+      <span class="pill">En construcción</span>
+    </div>
+  </div>
 </main>
 
 <footer>ESPACIO PÚBLICO · PROTOTIPO LOCAL DE PRUEBA · SIN CONEXIÓN A BASE DE DATOS</footer>
 
-<!-- MODAL: nuevo punto en el mapa -->
-<div class="overlay" id="pointOverlay">
+<!-- MODAL: inicio de turno -->
+<div class="overlay" id="inicioOverlay">
   <div class="modal">
     <div class="modal-head">
-      <h3>Nuevo punto en el mapa</h3>
-      <button id="closePoint">✕</button>
+      <h3>Registro de inicio de turno</h3>
+      <button id="closeInicio">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="field"><label>Nombre del punto</label><input type="text" id="pointName" placeholder="Ej. Banca dañada, Parque Central"></div>
-      <div class="field"><label>Categoría</label><input type="text" id="pointCategory" placeholder="Ej. Mobiliario, Iluminación, Aseo"></div>
-      <div class="field"><label>Descripción</label><input type="text" id="pointDesc" placeholder="Detalle breve"></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-block" id="savePoint">Guardar punto</button>
-    </div>
+    <div class="modal-body" id="inicioBody"></div>
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<script src="js/mapa.js"></script>
+<!-- MODAL: cierre de turno -->
+<div class="overlay" id="cierreOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Registro de cierre de turno</h3>
+      <button id="closeCierre">✕</button>
+    </div>
+    <div class="modal-body" id="cierreBody"></div>
+  </div>
+</div>
+
+<script src="js/turno.js"></script>
 
 </body>
 </html>
