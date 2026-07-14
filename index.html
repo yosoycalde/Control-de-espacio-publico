@@ -53,11 +53,11 @@
       <button class="btn btn-block" id="openCierre">Cerrar turno →</button>
     </div>
 
-    <div class="apartado disabled">
+    <div class="apartado" id="apIncidencia">
       <span class="ap-num">APT-03</span>
       <h4>Incidencias</h4>
-      <p>Reporte de novedades en el espacio público. Próximamente.</p>
-      <span class="pill">En construcción</span>
+      <p>Registra información de las personas que usan el espacio público, o reporta una situación cuando no fue posible identificarlas.</p>
+      <button class="btn btn-block" id="openIncidencia">Reportar incidencia →</button>
     </div>
   </div>
 </main>
@@ -86,8 +86,20 @@
   </div>
 </div>
 
+<!-- MODAL: incidencias -->
+<div class="overlay" id="incidenciaOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Reporte de incidencia</h3>
+      <button id="closeIncidencia">✕</button>
+    </div>
+    <div class="modal-body" id="incidenciaBody"></div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="js/turno.js"></script>
+<script src="js/incidencia.js"></script>
 
 </body>
 </html>
