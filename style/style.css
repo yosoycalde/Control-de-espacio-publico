@@ -260,3 +260,37 @@
     text-align:center; padding: 24px; color: rgba(244,246,248,0.3);
     font-family:'IBM Plex Mono', monospace; font-size:11px;
   }
+
+  /* ---------- Lista de personas activas (cierre de turno) ---------- */
+  .persona-list{ display:flex; flex-direction:column; gap:8px; }
+  .persona-item{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 13px 15px; border-radius:10px;
+    border: 1.5px solid rgba(15,26,38,0.15);
+    background:#fff; cursor:pointer;
+    transition: all .15s ease;
+  }
+  .persona-item:hover{ border-color: var(--hivis-dim); background: rgba(59,130,246,0.06); }
+  .persona-item .pi-name{ font-weight:600; font-size:14px; }
+  .persona-item .pi-meta{ font-family:'IBM Plex Mono', monospace; font-size:11px; color: var(--ink-soft); margin-top:2px; }
+  .persona-item .pi-arrow{ font-size:16px; color: var(--hivis-dim); flex-shrink:0; margin-left:10px; }
+
+  .empty-state{
+    text-align:center; padding: 34px 12px; color: var(--ink-soft); font-size:13.5px; line-height:1.5;
+  }
+
+  .selected-person{
+    background: var(--card-2); border-radius:10px; padding: 14px 16px;
+    margin-bottom:16px; border:1px solid rgba(15,26,38,0.12);
+  }
+  .selected-person .sp-name{ font-weight:700; font-size:15px; }
+  .selected-person .sp-meta{ font-family:'IBM Plex Mono', monospace; font-size:11px; color: var(--ink-soft); margin-top:4px; }
+
+  /* ---------- Código único de turno ---------- */
+  .code-badge{
+    font-family:'IBM Plex Mono', monospace; font-size:30px; font-weight:700;
+    letter-spacing:0.14em; text-align:center; color: var(--hivis-dim);
+    background: var(--card-2); border: 2px dashed var(--hivis-dim);
+    border-radius:10px; padding: 16px; margin: 14px 0;
+  }
+  .code-note{ font-size:12.5px; line-height:1.55; color: var(--ink-soft); margin-bottom:16px; }
